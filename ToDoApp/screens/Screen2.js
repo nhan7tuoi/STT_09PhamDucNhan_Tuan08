@@ -4,8 +4,28 @@ import { AntDesign } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 
 const Screen2 = ({ route, navigation }) => {
-    const {  name, user } = route?.params;
+    const { data } = route?.params;
     const [job, setJob] = useState('');
+    const handleAddJob = () => {
+        fetch("https://650663f03a38daf4803e724d.mockapi.io/phamducnhan/user/" + data.id, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                job: [
+                    ...data.job,
+                    {
+                        id: (data.job.length + 1),
+                        title: job
+                    },
+                ],
+            }),
+        }).then(response => {
+            if (response.ok)
+                return navigation.navigate("Screen3",{foundUser:data});
+        })
+    }
     return (
         <View style={{ flex: 1 }}>
             <View style={{ width: '100%', height: '20%', paddingTop: 20, paddingHorizontal: 20, justifyContent: 'space-between' }}>
@@ -20,7 +40,7 @@ const Screen2 = ({ route, navigation }) => {
                             <Image resizeMode='contain' style={{ width: 50, height: 50, borderRadius: 25 }} source={{ uri: 'https://i.scdn.co/image/ab6761610000e5eba69580618d4cb782c49f6c7b' }} />
                         </View>
                         <View>
-                            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Hi {name}</Text>
+                            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Hi {data.name}</Text>
                             <Text>Have agrate day a head</Text>
                         </View>
                     </View>
@@ -35,24 +55,7 @@ const Screen2 = ({ route, navigation }) => {
             </View>
             <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center', height: 200 }}>
                 <Pressable onPress={() => {
-                    fetch("https://650663f03a38daf4803e724d.mockapi.io/phamducnhan/user/" + user.id, {
-                        method: "PUT",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            todo: [
-                                ...user.todo,
-                                {
-                                    id: (user.todo.length + 1),
-                                    job: job
-                                },
-                            ],
-                        }),
-                    }).then(response => {
-                        if (response.ok)
-                            return navigation.navigate("Screen1");
-                    })
+                    handleAddJob();
                 }}
                     style={{ gap: 10, width: '60%', height: 50, backgroundColor: '#00BDD6', justifyContent: 'center', alignItems: 'center', borderRadius: 20, flexDirection: 'row' }}>
                     <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#FFF' }}>ADD</Text>
